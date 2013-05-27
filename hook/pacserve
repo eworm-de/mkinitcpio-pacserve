@@ -1,0 +1,14 @@
+#!/bin/sh
+
+run_latehook() {
+	local newroot="/new_root/"
+	
+	if [[ -n "${pacserve}" ]]; then
+		msg ":: Adding pacserve host '${pacserve}' to pacman.conf..."
+		# use awk here as busybox sed misbehaves
+		awk "/^\[options\]$/{print;next;};
+			/^#\[[-a-z]+\]$/{print; print \"#Server = ${pacserve}\"; next};
+			/^\[[-a-z]+\]$/{print; print \"Server = ${pacserve}\"; next}1" < ${newroot}/etc/pacman.conf > /tmp/pacman.conf
+		mv /tmp/pacman.conf ${newroot}/etc/pacman.conf
+	fi
+}
